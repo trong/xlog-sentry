@@ -65,7 +65,7 @@ func NewSentryOutputWithClient(client *raven.Client) *Output {
 func newOutput(client *raven.Client) *Output {
 	hostname, _ := os.Hostname()
 	return &Output{
-		Timeout: 100 * time.Millisecond,
+		Timeout: 300 * time.Millisecond,
 		StacktraceConfiguration: StackTraceConfiguration{
 			Enable:        false,
 			Level:         xlog.LevelError,
