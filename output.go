@@ -111,8 +111,17 @@ func getAndDelRequest(fields map[string]interface{}, key string) (*http.Request,
 	return req, true
 }
 
+func cloneFields(src map[string]interface{}) map[string]interface{} {
+	retval := make(map[string]interface{})
+	for k, v := range src {
+		retval[k] = v
+	}
+	return retval
+}
+
 // Write implements xlog.Output interface
 func (o Output) Write(fields map[string]interface{}) error {
+	fields = cloneFields(fields)
 	level := xlogSeverityMap[fields[xlog.KeyLevel].(string)]
 
 	packet := raven.NewPacket(fields[xlog.KeyMessage].(string))
@@ -120,12 +129,10 @@ func (o Output) Write(fields map[string]interface{}) error {
 	packet.Level = severityMap[level]
 	packet.Logger = "xlog"
 
-
 	delete(fields, xlog.KeyMessage)
 	delete(fields, xlog.KeyTime)
 	delete(fields, xlog.KeyLevel)
 	delete(fields, xlog.KeyFile)
-
 
 	if serverName, ok := getAndDel(fields, "host"); ok {
 		packet.ServerName = serverName
